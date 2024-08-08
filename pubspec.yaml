@@ -1,0 +1,47 @@
+name: yccetpc
+description: "A new Flutter project."
+
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  shared_preferences: ^2.0.15
+  cupertino_icons: ^1.0.2
+  intl: ^0.19.0
+  email_validator: ^2.1.17
+  qr_flutter: ^4.1.0
+  qr_code_scanner: ^1.0.1
+  fluttertoast: ^8.2.5
+  sqflite: ^2.0.0+4
+  path: ^1.8.0
+  firebase_core: ^3.2.0
+  firebase_messaging: ^15.0.3
+  flutter_local_notifications: ^17.2.1+2
+  flutter_syntax_view: ^4.1.0
+  shimmer: ^2.0.0
+  path_provider: ^2.1.4
+  
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+
+flutter:
+  uses-material-design: true
+
+
+  assets:
+    - assets/
+    - assets/images/y.png
+ 
+    
+
