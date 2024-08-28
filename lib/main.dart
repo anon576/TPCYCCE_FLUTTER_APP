@@ -49,6 +49,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.white70), // Border color when focused
+          ),
+        )
+      ),
       title: 'Yashwant',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey, 

@@ -19,7 +19,7 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     return await openDatabase(
       join(await getDatabasesPath(), 'attendance.db'),
-      version: 2, // Increment the version number
+      version: 1, // Increment the version number
       onCreate: (db, version) {
         db.execute('''
         CREATE TABLE failed_attendances(
@@ -50,22 +50,19 @@ class DatabaseHelper {
           FOREIGN KEY (CampusID) REFERENCES Campus(CampusID)
         );
         ''');
-         db.execute('''
+
+        db.execute('''
         CREATE TABLE notifications(
           id TEXT PRIMARY KEY,
           title TEXT,
           body TEXT,
+          screen TEXT,
+          screen_id INTEGER
         );
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) {
-        if (oldVersion < 2) {
-          // Add new columns to the notifications table
-          db.execute('ALTER TABLE notifications ADD COLUMN screen TEXT;');
-          db.execute('ALTER TABLE notifications ADD COLUMN screen_id INTEGER;');
-
-          print('Old version : $oldVersion');
-        }
+        if (oldVersion < newVersion) {}
       },
     );
   }
@@ -158,29 +155,34 @@ class DatabaseHelper {
 
       // Delete all rows from the Round table
       await db?.delete('Round');
+      await db?.delete('notifications');
     } catch (e) {
       InputComponent.showWarningSnackBar(context, "Error occured");
     }
   }
 
-  Future<void> insertNotification(
-      String? id, String? title, String? body,int? screen_id,String? screen) async {
+  Future<void> insertNotification(String? id, String? title, String? body,
+      int? screen_id, String? screen) async {
     try {
       final db = await database;
       await db?.insert(
         'notifications',
-        {'id': id, 'title': title, 'body': body,'screen':screen,'screen_id':screen_id},
+        {
+          'id': id,
+          'title': title,
+          'body': body,
+          'screen': screen,
+          'screen_id': screen_id
+        },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
       print("error occrued");
     }
   }
+
   Future<List<Map<String, dynamic>>> getNotifications() async {
-  final db = await database;
-  return await db?.query('notifications') ?? [];
+    final db = await database;
+    return await db?.query('notifications') ?? [];
+  }
 }
-
-}
-
-

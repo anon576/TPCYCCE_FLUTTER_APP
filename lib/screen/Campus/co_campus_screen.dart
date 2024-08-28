@@ -73,39 +73,75 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
   }
 
   void _showQRScanner(BuildContext context, int roundID) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Scan QR Code'),
-        content: Container(
-          height: 300,
-          width: 300,
-          child: QRView(
-            key: GlobalKey(debugLabel: 'QR'),
-            onQRViewCreated: (QRViewController controller) {
-              controller.scannedDataStream.listen((scanData) {
-                controller.dispose();
-                Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                    msg:
-                        'Scanned successfully : ${scanData.code} : ${roundID}');
-                print('Scanned Data: ${scanData.code}');
-                markAttendance(scanData.code, roundID);
-              });
-            },
-          ),
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text(
+        'Scan QR Code',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          color: Colors.black87,
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('Close'),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              'Please point the camera at the QR code to scan it. The QR code should be clearly visible within the frame.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Container(
+            height: 300,
+            width: 300,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: QRView(
+              key: GlobalKey(debugLabel: 'QR'),
+              onQRViewCreated: (QRViewController controller) {
+                controller.scannedDataStream.listen((scanData) {
+                  controller.dispose();
+                  Navigator.of(context).pop();
+                  Fluttertoast.showToast(
+                      msg: 'Scanned successfully: ${scanData.code} : ${roundID}');
+                  print('Scanned Data: ${scanData.code}');
+                  markAttendance(scanData.code, roundID);
+                });
+              },
+            ),
           ),
         ],
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: const Text(
+            'Close',
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
    void saveToLocalDatabase(context,int CampusId, String package, String CampusName, String Message, String Date, String Location, List<dynamic> Rounds) async {
     await DatabaseHelper().insertCampus(context,CampusId, CampusName, Message, package, Date, Location);
@@ -123,7 +159,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
       body: Stack(
         children: [
           isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
                   itemCount: campusData.length,
                   itemBuilder: (context, index) {
@@ -131,7 +167,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
                     return Card(
                       color: CardColor,
                       elevation: 4,
-                      margin: EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -144,7 +180,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: TextColor),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
                               'Message: ${campus['Message']}',
                               style: TextStyle(color: TextColor),
@@ -157,7 +193,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
                               'Location: ${campus['Location']}',
                               style: TextStyle(color: TextColor),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Text(
                               'Rounds:',
                               style: TextStyle(
@@ -186,7 +222,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
                                 ),
                               );
                             }).toList(),
-                             SizedBox(height: 10),
+                             const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () {
                             saveToLocalDatabase(
@@ -200,7 +236,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
                               campus['Rounds'],
                             );
                           },
-                          child: Text('Save'),
+                          child: const Text('Save',style: TextStyle(color: Colors.black),),
                         ),
                           ],
                         ),
@@ -211,7 +247,7 @@ class _CoCampusScreenState extends State<CoCampusScreen> {
           if (isProcessing)
             Container(
               color: Colors.black54,
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),

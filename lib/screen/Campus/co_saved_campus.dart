@@ -68,40 +68,76 @@ class _CoSavedCampusScreenState extends State<CoSavedCampusScreen> {
     }
   }
 
-  void _showQRScanner(BuildContext context, int roundID) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Scan QR Code'),
-        content: Container(
-          height: 300,
-          width: 300,
-          child: QRView(
-            key: GlobalKey(debugLabel: 'QR'),
-            onQRViewCreated: (QRViewController controller) {
-              controller.scannedDataStream.listen((scanData) {
-                controller.dispose();
-                Navigator.of(context).pop();
-                Fluttertoast.showToast(
-                    msg:
-                        'Scanned successfully : ${scanData.code} : ${roundID}');
-                print('Scanned Data: ${scanData.code}');
-                markAttendance(scanData.code, roundID);
-              });
-            },
-          ),
+ void _showQRScanner(BuildContext context, int roundID) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        'Scan QR Code',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+          color: Colors.black87,
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('Close'),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Text(
+              'Position the QR code within the frame to scan it. Make sure the code is well-lit and visible.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Container(
+            height: 300,
+            width: 300,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blueGrey, width: 2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: QRView(
+              key: GlobalKey(debugLabel: 'QR'),
+              onQRViewCreated: (QRViewController controller) {
+                controller.scannedDataStream.listen((scanData) {
+                  controller.dispose();
+                  Navigator.of(context).pop();
+                  Fluttertoast.showToast(
+                      msg: 'Scanned successfully: ${scanData.code} : ${roundID}');
+                  print('Scanned Data: ${scanData.code}');
+                  markAttendance(scanData.code, roundID);
+                });
+              },
+            ),
           ),
         ],
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,
+            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          child: Text(
+            'Close',
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {

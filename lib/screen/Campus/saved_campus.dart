@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:yccetpc/components/app_properties.dart';
 import 'package:yccetpc/components/custom_appbar.dart';
 import 'package:yccetpc/components/error_snackbar.dart';
@@ -115,32 +114,11 @@ class _SavedCampusScreenState extends State<SavedCampusScreen> {
                                 color: TextColor,
                               ),
                               onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                        'QR Code for ${round['RoundName']}'),
-                                    content: Container(
-                                      height: 200,
-                                      width: 200,
-                                      child: Center(
-                                          child: QrImageView(
-                                        data: '${round['AttendanceID']}',
-                                        version: QrVersions.auto,
-                                        size: 320,
-                                        gapless: false,
-                                      )),
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Close'),
-                                      ),
-                                    ],
-                                  ),
-                                );
+                                InputComponent.showQrCodeDialog(
+                                        context,
+                                        round['RoundName'],
+                                        round['AttendanceID'],
+                                      );
                               },
                             ),
                           );

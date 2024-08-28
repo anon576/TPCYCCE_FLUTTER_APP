@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:yccetpc/api/campus_api.dart';
 import 'package:yccetpc/components/app_properties.dart';
 import 'package:yccetpc/components/error_snackbar.dart';
@@ -107,76 +106,6 @@ class _CampusScreenState extends State<CampusScreen> {
     }
   }
 
-  void _showQrCodeDialog(BuildContext context, String roundName, int attendanceId) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        elevation: 16,
-        child: Container(
-          padding: EdgeInsets.all(16.0),
-          color: CardColor,
-          width: 300,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'QR Code for $roundName',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: TextColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: QrImageView(
-                      data: attendanceId.toString(),
-                      version: QrVersions.auto,
-                      size: 200,
-                      gapless: false,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Close'),
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.black, backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -269,7 +198,7 @@ class _CampusScreenState extends State<CampusScreen> {
                                   child: IconButton(
                                     icon: Icon(Icons.qr_code, color: TextColor),
                                     onPressed: () {
-                                      _showQrCodeDialog(
+                                      InputComponent.showQrCodeDialog(
                                         context,
                                         round['RoundName'],
                                         round['Attendance']['AttendanceID'],
@@ -299,7 +228,7 @@ class _CampusScreenState extends State<CampusScreen> {
                                 padding: const EdgeInsets.only(right: 10.0),
                                 child: ElevatedButton(
                                   onPressed: () => navigateToSection("Coding",campus['CampusID']),
-                                  child: Text("Coding"),
+                                  child: Text("Coding",style: TextStyle(color: Colors.black),),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ButtonColor,
                                     shape: RoundedRectangleBorder(
@@ -313,7 +242,7 @@ class _CampusScreenState extends State<CampusScreen> {
                                 padding: const EdgeInsets.only(right: 10.0),
                                 child: ElevatedButton(
                                   onPressed: () => navigateToSection("Aptitude and LR",campus['CampusID']),
-                                  child: Text("Aptitude and LR"),
+                                  child: Text("Aptitude and LR",style: TextStyle(color: Colors.black)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ButtonColor,
                                     shape: RoundedRectangleBorder(
@@ -327,7 +256,7 @@ class _CampusScreenState extends State<CampusScreen> {
                                 padding: const EdgeInsets.only(right: 15.0),
                                 child: ElevatedButton(
                                   onPressed: () => navigateToSection("Interview Questions",campus['CampusID']),
-                                  child: Text("Interview Questions"),
+                                  child: Text("Interview Questions",style: TextStyle(color: Colors.black)),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: ButtonColor,
                                     shape: RoundedRectangleBorder(
@@ -354,7 +283,7 @@ class _CampusScreenState extends State<CampusScreen> {
                               campus['Rounds'],
                             );
                           },
-                          child: Text('Save'),
+                          child: Text('Save',style: TextStyle(color: Colors.black)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: ButtonColor,
                             shape: RoundedRectangleBorder(

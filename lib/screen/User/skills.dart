@@ -24,46 +24,51 @@ class _SkillsState extends State<Skills> {
     fetchSkills();
   }
 
-  Future<void> fetchSkills() async {
+ Future<void> fetchSkills() async {
+  showLoadingIndicator();
+  final response = await SkillAPI.readSkills();
+  if (!mounted) return; // Check if the widget is still mounted
+  hideLoadingIndicator();
+  if (response['success']) {
+    setState(() {
+      savedSkills = List<Map<String, dynamic>>.from(response['skills']);
+    });
+  } else {
+    InputComponent.showWarningSnackBar(context, response['message'] ?? 'Failed to load skills');
+  }
+}
+
+void showLoadingIndicator() {
+  if (!mounted) return; // Check if the widget is still mounted
+  setState(() {
+    isLoading = true;
+  });
+}
+
+void hideLoadingIndicator() {
+  if (!mounted) return; // Check if the widget is still mounted
+  setState(() {
+    isLoading = false;
+  });
+}
+
+Future<void> saveSkill() async {
+  if (selectedSkill != null && selectedLevel != null) {
     showLoadingIndicator();
-    final response = await SkillAPI.readSkills();
+    final response = await SkillAPI.createSkill(selectedSkill!, selectedLevel!);
+    if (!mounted) return; // Check if the widget is still mounted
     hideLoadingIndicator();
     if (response['success']) {
-      setState(() {
-        savedSkills = List<Map<String, dynamic>>.from(response['skills']);
-      });
+      fetchSkills(); // Refresh the list after adding a skill
+      InputComponent.showErrorDialogBox(context, 'Skill added successfully', response['message']);
     } else {
-      InputComponent.showWarningSnackBar(context, response['message'] ?? 'Failed to load skills');
+      InputComponent.showWarningSnackBar(context, response['message'] ?? 'Failed to add skill');
     }
+  } else {
+    InputComponent.showWarningSnackBar(context, 'Please select a skill and level');
   }
+}
 
-  void showLoadingIndicator() {
-    setState(() {
-      isLoading = true;
-    });
-  }
-
-  void hideLoadingIndicator() {
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  Future<void> saveSkill() async {
-    if (selectedSkill != null && selectedLevel != null) {
-      showLoadingIndicator();
-      final response = await SkillAPI.createSkill(selectedSkill!, selectedLevel!);
-      hideLoadingIndicator();
-      if (response['success']) {
-        fetchSkills(); // Refresh the list after adding a skill
-        InputComponent.showErrorDialogBox(context, 'Skill added successfully', response['message']);
-      } else {
-        InputComponent.showWarningSnackBar(context, response['message'] ?? 'Failed to add skill');
-      }
-    } else {
-      InputComponent.showWarningSnackBar(context, 'Please select a skill and level');
-    }
-  }
 
   Future<void> updateSkill(int index) async {
     showDialog(
@@ -74,6 +79,9 @@ class _SkillsState extends State<Skills> {
 
         return Dialog(
           backgroundColor: CardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: StatefulBuilder(
@@ -83,7 +91,7 @@ class _SkillsState extends State<Skills> {
                   children: [
                     Text(
                       'Update Skill',
-                      style: TextStyle(color: TextColor, fontSize: 18.0),
+                      style: TextStyle(color: TextColor, fontSize: 20.0, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 16.0),
                     DropdownButtonFormField<String>(
@@ -92,6 +100,9 @@ class _SkillsState extends State<Skills> {
                         labelStyle: TextStyle(color: HintColor),
                         filled: true,
                         fillColor: BackgroundColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                       ),
                       value: newSkill,
                       items: skills.map((String skill) {
@@ -114,6 +125,9 @@ class _SkillsState extends State<Skills> {
                         labelStyle: TextStyle(color: HintColor),
                         filled: true,
                         fillColor: BackgroundColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                       ),
                       value: newLevel,
                       items: levels.map((int level) {
@@ -149,7 +163,12 @@ class _SkillsState extends State<Skills> {
                             }
                           },
                           child: Text('Update', style: TextStyle(color: BackgroundColor)),
-                          style: ElevatedButton.styleFrom(backgroundColor: TextColor),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: TextColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
@@ -177,28 +196,41 @@ class _SkillsState extends State<Skills> {
       fetchSkills(); // Refresh the list after deleting a skill
       InputComponent.showErrorDialogBox(context, 'Skill deleted successfully', response['message']);
     } else {
-      InputComponent.showWarningSnackBar(context, response['message'] ?? 'Failed to delete skill');
+      InputComponent.showWarningSnackBar(context, 'Failed to delete skill');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar.screenAppbar("Campus", context),
+      appBar: CustomAppBar.screenAppbar("Skills", context),
       backgroundColor: BackgroundColor,
       body: Stack(
         children: [
           SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Text(
+                    'Add a New Skill',
+                    style: TextStyle(
+                      color: TextColor,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
                       labelText: 'Skill',
                       labelStyle: TextStyle(color: HintColor),
                       filled: true,
                       fillColor: CardColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     value: selectedSkill,
                     items: skills.map((String skill) {
@@ -221,6 +253,9 @@ class _SkillsState extends State<Skills> {
                       labelStyle: TextStyle(color: HintColor),
                       filled: true,
                       fillColor: CardColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                     value: selectedLevel,
                     items: levels.map((int level) {
@@ -236,24 +271,45 @@ class _SkillsState extends State<Skills> {
                     },
                     dropdownColor: CardColor,
                   ),
-                  SizedBox(height: 16.0),
+                  SizedBox(height: 24.0),
                   ElevatedButton(
                     onPressed: saveSkill,
                     child: Text('Submit', style: TextStyle(color: BackgroundColor)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: TextColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
                     ),
                   ),
                   SizedBox(height: 24.0),
+                  Divider(color: HintColor),
+                  SizedBox(height: 24.0),
+                  Text(
+                    'Saved Skills',
+                    style: TextStyle(
+                      color: TextColor,
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
                   ListView.builder(
                     shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: savedSkills.length,
                     itemBuilder: (context, index) {
                       final skill = savedSkills[index];
                       return Card(
+                        margin: EdgeInsets.symmetric(vertical: 8.0),
                         color: CardColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
                         child: ListTile(
-                          title: Text(skill['Skill'], style: TextStyle(color: TextColor)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                          title: Text(skill['Skill'], style: TextStyle(color: TextColor, fontWeight: FontWeight.bold)),
                           subtitle: Text('Level: ${skill['Level']}', style: TextStyle(color: HintColor)),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
